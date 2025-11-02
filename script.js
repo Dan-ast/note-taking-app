@@ -2,8 +2,66 @@ const noteEl = document.getElementById("note");
 const statusEl = document.getElementById("status");
 const downloadBtn = document.getElementById("downloadBtn");
 const resetBtn = document.getElementById("resetBtn");
+const saveNoteBtn = document.getElementById("saveBtn");
+const notesList = document.getElementById("notesList");
 
 let currentContent = ""; 
+let miniNotes = JSON.parse(localStorage.getItem('miniNotes')) || [];
+
+function updateMiniNotesDisplay() {
+    notesList.innerHTML = "";
+    miniNotes.forEach((note, index) => {
+        const miniNoteEl = document.createElement("div");
+        miniNoteEl.className = "mini-note";
+        miniNoteEl.innerHTML = `
+            <button class="mini-note-delete" onclick="deleteMiniNote(${index})">❌</button>
+            <div class="mini-note-content">${note.content.substring(0, 100)}${note.content.length > 100 ? '...' : ''}</div>
+            `;
+            miniNoteEl.addEventListener("click", () => loadMiniNote(index));
+            notesList.appendChild(miniNoteEl);
+    })
+}
+
+
+//saving a mini note
+saveNoteBtn.addEventListener("click", () => {
+    const content = noteEl.textContent.trim();
+    if (content) {
+        miniNotes.push({
+            content: content,
+            timestamp: new Date().toLocaleString()
+        });
+        localStorage.setItem('miniNotes', JSON.stringify(miniNotes));
+        updateMiniNotesDisplay();
+        statusEl.textContent = "Your note saved!"
+    }
+});
+
+function loadMiniNote(index) {
+    noteEl.textContent = notesList[index].content;
+    currentContent = notesList[index].content;
+    statusEl.textContent = "Note loaded from mini notes";
+}
+
+//deleting a mini note
+function deleteMiniNote(index) {
+    miniNotes.splice(index, 1);
+    localStorage.setItem('miniNotes', JSON.stringify(miniNotes));
+    updateMiniNotesDisplay();
+    statusEl.textContent = "Mini note deleted";
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+    currentContent = noteEl.textContent;
+
+    const savedContent = localStorage.getItem("noteContent");
+
+    if(savedContent) {
+        noteEl.innerHTML = savedContent;
+        currentContent = savedContent;
+    }
+    updateMiniNotesDisplay();
+})
 
 noteEl.addEventListener("focus", () => {
     statusEl.textContent = "";
@@ -28,17 +86,6 @@ noteEl.addEventListener("blur", () => {
     localStorage.setItem("noteContent", newContent);
 
 });
-
-window.addEventListener("DOMContentLoaded", () => {
-    currentContent = noteEl.textContent;
-
-    const savedContent = localStorage.getItem("noteContent");
-
-    if(savedContent) {
-        noteEl.innerHTML = savedContent;
-        currentContent = savedContent;
-    }
-})
 
 downloadBtn.addEventListener("click", () => {
     const content = noteEl.textContent;
