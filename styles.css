@@ -32,3 +32,20 @@
     border: 1px solid rgb(85, 207, 60);
 }
 
+.btn-container {
+    max-width: 600px;
+    margin: 1em auto;
+    text-align: center;
+}
+
+.btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 0 15px;
+    border-radius: 20px;
+}
+
+#status {
+    text-align: center;
+}
