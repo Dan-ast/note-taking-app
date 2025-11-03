@@ -107,3 +107,17 @@ resetBtn.addEventListener("click", () => {
     statusEl.textContent = "Note reset successfully!"
 })
 
+document.querySelectorAll(".toolbar-btn").forEach(button => {
+    button.addEventListener("click", (e) => {
+        e.preventDefault();
+        const command = button.dataset.command;
+
+        if  (command === "undo" || command === "redo") {
+            document.execCommand(command, false, null);
+        } else {
+            document.execCommand(command, false, null);
+        }
+
+        noteEl.focus();
+    })
+})

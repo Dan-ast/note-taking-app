@@ -9,6 +9,45 @@ body {
     min-height: 100vh;
 }
 
+.toolbar {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 1em auto;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    max-width: 600px;
+}
+
+.toolbar-btn {
+    background-color: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.toolbar-btn.neon-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 
+        0 0 10px rgba(122, 101, 149, 1),
+        0 0 20px rgba(122, 101, 149, 0.8),
+        0 0 30px rgba(122, 101, 149, 0.6),
+        0 0 40px rgba(122, 101, 149, 0.4);
+    color: #7a6595;
+    text-shadow: 0 0 5px rgba(122, 101, 149, 0.4);
+}
+
+.toolbar-btn:active {
+    transform: translateY(0);
+}
+
 .main-container {
     display: flex;
     min-height: 100vh;
@@ -130,9 +169,13 @@ body {
 }
 
 .btn-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
     max-width: 600px;
     margin: 1em auto;
     text-align: center;
+
 }
 
 .btn {
@@ -160,3 +203,4 @@ body {
     from { opacity: 0; }
     to { opacity: 1; }
 }
+
