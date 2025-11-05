@@ -4,43 +4,75 @@ const downloadBtn = document.getElementById("downloadBtn");
 const resetBtn = document.getElementById("resetBtn");
 const saveNoteBtn = document.getElementById("saveBtn");
 const notesList = document.getElementById("notesList");
+let currentNoteIndex = null;
 
 let currentContent = ""; 
 let miniNotes = JSON.parse(localStorage.getItem('miniNotes')) || [];
 
 function updateMiniNotesDisplay() {
     notesList.innerHTML = "";
+
     miniNotes.forEach((note, index) => {
         const miniNoteEl = document.createElement("div");
         miniNoteEl.className = "mini-note";
+
+        if (index === currentNoteIndex) {
+            miniNoteEl.classList.add("active");
+        }
+
         miniNoteEl.innerHTML = `
             <button class="mini-note-delete" onclick="deleteMiniNote(${index})">❌</button>
             <div class="mini-note-content">${note.content.substring(0, 100)}${note.content.length > 100 ? '...' : ''}</div>
+            <div class="mini-note-time">${note.timestamp}</div>
             `;
-            miniNoteEl.addEventListener("click", () => loadMiniNote(index));
+
+            miniNoteEl.addEventListener("click", (e) => {
+                if (!e.target.classList.contains("mini-note-delete")) {
+                    loadMiniNote(index);
+                }
+            });
             notesList.appendChild(miniNoteEl);
     })
+}
+
+function getFormattedTimestamp() {
+    return new Date().toLocaleDateString('en-GB', {day: 'numeric', month: 'short', year: 'numeric'}) + ", " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 }
 
 
 //saving a mini note
 saveNoteBtn.addEventListener("click", () => {
     const content = noteEl.textContent.trim();
+
     if (content) {
-        miniNotes.push({
-            content: content,
-            timestamp: new Date().toLocaleString()
-        });
+        const timestamp = getFormattedTimestamp();
+        
+        //editing the current note
+        if (currentNoteIndex !== null && miniNotes[currentNoteIndex]) {
+            miniNotes[currentNoteIndex].content = content;
+            miniNotes[currentNoteIndex].timestamp = timestamp;
+            statusEl.textContent = "Note updated successfully";
+        } else {
+            miniNotes.push({
+                content: content,
+                timestamp: timestamp
+            });
+            currentNoteIndex = miniNotes.length - 1;
+            statusEl.textContent = "New note saved!";
+        }
+        
         localStorage.setItem('miniNotes', JSON.stringify(miniNotes));
         updateMiniNotesDisplay();
-        statusEl.textContent = "Your note saved!"
     }
 });
 
 function loadMiniNote(index) {
-    noteEl.textContent = notesList[index].content;
-    currentContent = notesList[index].content;
-    statusEl.textContent = "Note loaded from mini notes";
+    noteEl.innerHTML = miniNotes[index].content;
+    currentContent = miniNotes[index].content;
+
+    currentNoteIndex = index;
+    statusEl.textContent = "Note loaded from mini notes - you can edit it now!";
+    noteEl.focus();
 }
 
 //deleting a mini note
@@ -75,16 +107,20 @@ noteEl.addEventListener("blur", () => {
     }
 
     currentContent = newContent;
-    console.log(currentContent);
+    
+    if (currentNoteIndex !== null && miniNotes[currentNoteIndex]) {
+        miniNotes[currentNoteIndex].content = newContent;
+        miniNotes[currentNoteIndex].timestamp = getFormattedTimestamp();
+        localStorage.setItem("miniNotes", JSON.stringify(miniNotes));
+        updateMiniNotesDisplay();
+    }
 
     statusEl.textContent = "Note saved successfully";
-
     setTimeout(() => {
         statusEl.textContent = "";
     }, 5000);
 
     localStorage.setItem("noteContent", newContent);
-
 });
 
 downloadBtn.addEventListener("click", () => {
